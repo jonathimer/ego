@@ -2,7 +2,9 @@ cmake_minimum_required(VERSION 3.11)
 project(ego VERSION 0.2.2)
 
 if(NOT CMAKE_BUILD_TYPE)
-  set(CMAKE_BUILD_TYPE Debug)
+  #set(CMAKE_BUILD_TYPE Debug)
+  #set(CMAKE_BUILD_TYPE Release)
+  set(CMAKE_BUILD_TYPE MinSizeRel)
 endif()
 if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
   set(CMAKE_INSTALL_PREFIX /opt/ego CACHE PATH "" FORCE)
@@ -18,6 +20,7 @@ execute_process(
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_EXTENSIONS OFF)
 add_compile_options(-Wall -Wextra -pedantic -Werror)
+#add_compile_options(-Wall -Wextra -pedantic -Werror -fdebug-prefix-map=./1/ego=./2/ego)
 if(TIDY)
   set(CMAKE_CXX_CLANG_TIDY clang-tidy-10)
 endif()
@@ -34,7 +37,8 @@ target_link_libraries(ego-enclave-lib PRIVATE openenclave::oe_includes)
 add_custom_command(
   OUTPUT premain.a
   DEPENDS ego/premain/main.go ego/premain/core/core.go
-  COMMAND ertgo build -buildmode=c-archive -o ${CMAKE_BINARY_DIR}
+  #COMMAND ertgo build -buildmode=c-archive -o ${CMAKE_BINARY_DIR}
+  COMMAND ertgo build -trimpath -buildmode=c-archive -o ${CMAKE_BINARY_DIR}
   WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/ego/premain)
 add_custom_target(premainbuild DEPENDS premain.a)
 
